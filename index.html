@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kopi Pintu Taman — Menu & Review</title>
+  <meta name="description" content="Kopi Pintu Taman — Tempat nongkrong santai bersama teman dan keluarga. Lihat menu dan beri review.">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <h1>☕ Kopi Pintu Taman</h1>
+    <div class="tagline">
+    <p class="hours-title">Opening Hours</p>
+    <p>Senin - Kamis: 15.00 - 22.00</p>
+    <p>Jumat - Minggu: 15.00 - 23.00</p>
+    </div>
+  </header>
+
+  <section class="recommendation">
+  <h2 class="rec-title">✨ Rekomendasi Minggu Ini</h2>
+
+  <div class="rec-container" id="rec-container">
+    <!-- Diisi dari JS -->
+  </div>
+</section>
+
+  <!-- Menu -->
+  <main class="menu-container" id="menu-container">
+    <!-- Populated by JS -->
+  </main>
+
+  <!-- Floating Review Button -->
+  <button class="fab" id="fab-review" aria-label="Beri Review">
+    💬 Beri Review
+  </button>
+
+  <!-- Review Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <button class="modal-close" id="modal-close" aria-label="Tutup">
+        &times;
+      </button>
+
+      <h2>Beri Review</h2>
+
+      <form id="review-form">
+        <label for="menu-search">Pilih Menu</label>
+        <div class="dropdown-wrapper">
+          <input
+            type="text"
+            id="menu-search"
+            placeholder="Cari menu..."
+            autocomplete="off"
+          >
+          <ul class="dropdown-list" id="dropdown-list"></ul>
+          <input type="hidden" id="selected-menu" required>
+        </div>
+
+        <label>Rating</label>
+        <div class="star-rating" id="star-rating">
+          <span data-val="1">☆</span>
+          <span data-val="2">☆</span>
+          <span data-val="3">☆</span>
+          <span data-val="4">☆</span>
+          <span data-val="5">☆</span>
+        </div>
+        <input type="hidden" id="rating-value" required>
+
+        <label for="review-text">Komentar</label>
+        <textarea
+          id="review-text"
+          rows="4"
+          placeholder="Tulis komentar kamu..."
+        ></textarea>
+
+        <button type="submit" class="btn-submit">
+          Kirim Review
+        </button>
+
+        <p class="form-msg" id="form-msg"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Menu Detail Modal -->
+  <div class="modal-overlay" id="detail-overlay">
+    <div class="modal">
+      <button class="modal-close" id="detail-close" aria-label="Tutup">
+        &times;
+      </button>
+
+      <h2 id="detail-name"></h2>
+      <p id="detail-price" class="menu-price"></p>
+
+      <div id="detail-levels">
+        <div id="strength-wrap">
+          <label>Strength</label>
+          <div id="detail-strength" class="level-bar"></div>
+        </div>
+
+        <div id="sweet-wrap">
+          <label>Sweet</label>
+          <div id="detail-sweet" class="level-bar"></div>
+        </div>
+      </div>
+      <label>Deskripsi</label>
+      <p id="detail-desc"></p>
+    </div>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>

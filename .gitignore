@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+
+Code_V1/
+Code_V2(Local)/
+
+reviews.db
