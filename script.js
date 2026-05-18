@@ -487,6 +487,59 @@ detailOverlay.addEventListener("click", e => {
   }
 });
 
+// ============================================================
+// Render menu utama  (jalan langsung saat halaman dibuka)
+// ============================================================
+const container = document.getElementById("menu-container");
+
+MENU.forEach(cat => {
+  const h = document.createElement("h2");
+  h.className = "category-title";
+  h.textContent = cat.cat;
+  container.appendChild(h);
+
+  cat.items.forEach(item => {
+    const icon = ["Snacks"].includes(cat.cat)
+      ? "🍟"
+      : ["Pizza"].includes(cat.cat)
+      ? "🍕"
+      : ["Rice Bowl"].includes(cat.cat)
+      ? "🍚"
+      : ["Matcha"].includes(cat.cat)
+      ? "🍵"
+      : ["Non Coffee"].includes(cat.cat)
+      ? "🥤"
+      : "☕";
+
+    const div = document.createElement("div");
+    div.className = "menu-item";
+
+    const badgeHtml = item.badges?.length
+      ? `<div class="menu-badges">
+          ${item.badges.map(b => `<span class="badge">${b}</span>`).join("")}
+         </div>`
+      : "";
+
+    div.innerHTML = `
+      <span class="menu-icon">${icon}</span>
+      <div class="menu-info">
+        <div class="menu-name-row">
+          <div class="menu-name">${item.name}</div>
+          ${badgeHtml}
+        </div>
+        <div class="menu-price">Rp ${item.price.toLocaleString("id-ID")}</div>
+        <div class="menu-desc">${item.shortDesc}</div>
+      </div>`;
+
+    div.addEventListener("click", () => openMenuDetail(item));
+
+    container.appendChild(div);
+  });
+});
+
+// ============================================================
+// Rekomendasi (dari hasil SAW via API)
+// ============================================================
 const recContainer = document.getElementById("rec-container");
 const allItems = MENU.flatMap(c => c.items);
 
