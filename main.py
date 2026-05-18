@@ -117,6 +117,39 @@ def list_reviews():
         for r in rows
     ]
 
+@app.get("/api/recommendations")
+def list_recommendations():
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Tabel recommendations dibuat oleh script saw_recommend.py.
+    # Kalau belum pernah dijalankan, kembalikan list kosong (web fallback).
+    try:
+        cursor.execute("""
+            SELECT rank, menu_name, sentiment_avg, sales_qty,
+                   saw_score, is_recommended
+            FROM recommendations
+            ORDER BY rank ASC
+        """)
+        rows = cursor.fetchall()
+    except Exception:
+        conn.rollback()
+        rows = []
+
+    cursor.close()
+    conn.close()
+
+    return [
+        {
+            "rank": r[0],
+            "menu_name": r[1],
+            "sentiment_avg": r[2],
+            "sales_qty": r[3],
+            "saw_score": r[4],
+            "is_recommended": r[5],
+        }
+        for r in rows
+    ]
 
 # ========================
 # STATIC (FRONTEND)

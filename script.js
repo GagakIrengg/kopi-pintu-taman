@@ -1,11 +1,5 @@
 const API_BASE = "";
 
-const RECOMMENDED = [
-  "Kopi Pintu Taman",
-  "Kopi Creamy Aren",
-  "Kopi Foamy Aren"
-];
-
 const MENU = [
   {
     cat: "Signature Coffee",
@@ -493,77 +487,57 @@ detailOverlay.addEventListener("click", e => {
   }
 });
 
-// Render menu
-const container = document.getElementById("menu-container");
-
-MENU.forEach(cat => {
-  const h = document.createElement("h2");
-  h.className = "category-title";
-  h.textContent = cat.cat;
-  container.appendChild(h);
-
-  cat.items.forEach(item => {
-    const icon = ["Snacks"].includes(cat.cat)
-      ? "🍟"
-      : ["Pizza"].includes(cat.cat)
-      ? "🍕"
-      : ["Rice Bowl"].includes(cat.cat)
-      ? "🍚"
-      : ["Matcha"].includes(cat.cat)
-      ? "🍵"
-      : ["Non Coffee"].includes(cat.cat)
-      ? "🥤"
-      : "☕";
-
-    const div = document.createElement("div");
-    div.className = "menu-item";
-
-    const badgeHtml = item.badges?.length
-      ? `<div class="menu-badges">
-          ${item.badges.map(b => `<span class="badge">${b}</span>`).join("")}
-         </div>`
-      : "";
-
-    div.innerHTML = `
-      <span class="menu-icon">${icon}</span>
-      <div class="menu-info">
-        <div class="menu-name-row">
-          <div class="menu-name">${item.name}</div>
-          ${badgeHtml}
-        </div>
-        <div class="menu-price">Rp ${item.price.toLocaleString("id-ID")}</div>
-        <div class="menu-desc">${item.shortDesc}</div>
-      </div>`;
-
-    div.addEventListener("click", () => openMenuDetail(item));
-
-    container.appendChild(div);
-  });
-});
-
 const recContainer = document.getElementById("rec-container");
-
-// ambil item dari MENU berdasarkan nama
 const allItems = MENU.flatMap(c => c.items);
 
-RECOMMENDED.forEach(name => {
-  const item = allItems.find(i => i.name === name);
-  if (!item) return;
+async function loadRecommendations() {
+  try {
+    const res = await fetch(`${API_BASE}/api/recommendations`);
+    if (!res.ok) throw new Error("gagal ambil rekomendasi");
+    const data = await res.json();
 
-  const div = document.createElement("div");
-  div.className = "rec-card";
+    // ambil yang ditandai recommended; kalau kosong, pakai 3 teratas
+    let recs = data.filter(d => d.is_recommended);
+    if (recs.length === 0) recs = data.slice(0, 3);
 
-  div.innerHTML = `
-    <div class="rec-icon">☕</div>
-    <div class="rec-badge">👍 Best</div>
-    <div class="rec-name">${item.name}</div>
-    <div class="rec-price">Rp ${item.price.toLocaleString("id-ID")}</div>
-  `;
+    if (recs.length === 0) {
+      // Fallback terakhir: belum ada hasil SAW sama sekali.
+      recContainer.innerHTML =
+        '<p style="color:#a1887f;font-size:.85rem">' +
+        'Rekomendasi belum tersedia.</p>';
+      return;
+    }
 
-  div.addEventListener("click", () => openMenuDetail(item));
+    recContainer.innerHTML = "";
+    recs.forEach(r => {
+      const item = allItems.find(i => i.name === r.menu_name);
+      const price = item
+        ? `Rp ${item.price.toLocaleString("id-ID")}`
+        : "";
 
-  recContainer.appendChild(div);
-});
+      const div = document.createElement("div");
+      div.className = "rec-card";
+      div.innerHTML = `
+        <div class="rec-icon">☕</div>
+        <div class="rec-badge">👍 Best</div>
+        <div class="rec-name">${r.menu_name}</div>
+        <div class="rec-price">${price}</div>
+      `;
+      if (item) {
+        div.addEventListener("click", () => openMenuDetail(item));
+      }
+      recContainer.appendChild(div);
+    });
+  } catch (err) {
+    console.error(err);
+    recContainer.innerHTML =
+      '<p style="color:#a1887f;font-size:.85rem">' +
+      'Rekomendasi belum tersedia.</p>';
+  }
+}
+
+loadRecommendations();
+
 
 // Modal
 const overlay = document.getElementById("modal-overlay");
