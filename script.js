@@ -490,7 +490,7 @@ detailOverlay.addEventListener("click", e => {
 // ============================================================
 // Render menu — Tab Filter + Search + Auto Top SAW
 // ============================================================
-const container = document.getElementById("menu-container");
+const filterInput = document.getElementById("menu-filter-search");
 const tabsContainer = document.getElementById("category-tabs");
 const searchInput = document.getElementById("menu-filter-search");
 
@@ -640,7 +640,7 @@ function renderMenu(){
 }
 
 // Search input handler
-searchInput.addEventListener("input", e => {
+filterInput.addEventListener("input", e => {
   searchQuery = e.target.value.trim();
   renderMenu();
 });
