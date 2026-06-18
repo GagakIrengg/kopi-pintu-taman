@@ -490,9 +490,9 @@ detailOverlay.addEventListener("click", e => {
 // ============================================================
 // Render menu — Tab Filter + Search + Auto Top SAW
 // ============================================================
+const container = document.getElementById("menu-container");
 const filterInput = document.getElementById("menu-filter-search");
 const tabsContainer = document.getElementById("category-tabs");
-const searchInput = document.getElementById("menu-filter-search");
 
 // TOP SAW — auto-fetched dari API (sinkron dgn section Rekomendasi)
 let TOP_SAW = [];
@@ -714,7 +714,7 @@ document.getElementById("fab-review").onclick = () => overlay.classList.add("act
 document.getElementById("modal-close").onclick = () => overlay.classList.remove("active");
 overlay.addEventListener("click", e => { if (e.target === overlay) overlay.classList.remove("active"); });
 
-// Dropdown search
+// Dropdown search (untuk modal review)
 const searchInput = document.getElementById("menu-search");
 const dropdownList = document.getElementById("dropdown-list");
 const selectedMenu = document.getElementById("selected-menu");
