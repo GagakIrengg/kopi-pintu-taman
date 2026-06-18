@@ -488,54 +488,170 @@ detailOverlay.addEventListener("click", e => {
 });
 
 // ============================================================
-// Render menu utama  (jalan langsung saat halaman dibuka)
+// Render menu — Tab Filter + Search + Auto Top SAW
 // ============================================================
 const container = document.getElementById("menu-container");
+const tabsContainer = document.getElementById("category-tabs");
+const searchInput = document.getElementById("menu-filter-search");
 
-MENU.forEach(cat => {
-  const h = document.createElement("h2");
-  h.className = "category-title";
-  h.textContent = cat.cat;
-  container.appendChild(h);
+// TOP SAW — auto-fetched dari API (sinkron dgn section Rekomendasi)
+let TOP_SAW = [];
 
-  cat.items.forEach(item => {
-    const icon = ["Snacks"].includes(cat.cat)
-      ? "🍟"
-      : ["Pizza"].includes(cat.cat)
-      ? "🍕"
-      : ["Rice Bowl"].includes(cat.cat)
-      ? "🍚"
-      : ["Matcha"].includes(cat.cat)
-      ? "🍵"
-      : ["Non Coffee"].includes(cat.cat)
-      ? "🥤"
-      : "☕";
+// State
+let activeTab = "Semua";
+let searchQuery = "";
 
-    const div = document.createElement("div");
-    div.className = "menu-item";
+// Icon per kategori
+function getIcon(catName){
+  if (catName === "Snacks") return "🍟";
+  if (catName === "Pizza") return "🍕";
+  if (catName === "Rice Bowl") return "🍚";
+  if (catName === "Matcha") return "🍵";
+  if (catName === "Non Coffee") return "🥤";
+  return "☕";
+}
 
-    const badgeHtml = item.badges?.length
-      ? `<div class="menu-badges">
-          ${item.badges.map(b => `<span class="badge">${b}</span>`).join("")}
-         </div>`
-      : "";
+// Search match — case-insensitive, nama + deskripsi
+function matchesSearch(item, query){
+  if (!query) return true;
+  const q = query.toLowerCase();
+  return (
+    item.name.toLowerCase().includes(q) ||
+    (item.shortDesc || "").toLowerCase().includes(q) ||
+    (item.fullDesc || "").toLowerCase().includes(q)
+  );
+}
 
-    div.innerHTML = `
-      <span class="menu-icon">${icon}</span>
-      <div class="menu-info">
-        <div class="menu-name-row">
-          <div class="menu-name">${item.name}</div>
-          ${badgeHtml}
-        </div>
-        <div class="menu-price">Rp ${item.price.toLocaleString("id-ID")}</div>
-        <div class="menu-desc">${item.shortDesc}</div>
-      </div>`;
+// Fetch hasil SAW dari API → isi TOP_SAW
+async function loadTopSAW(){
+  try {
+    const res = await fetch(`${API_BASE}/api/recommendations`);
+    if (!res.ok) throw new Error("API gagal");
+    const data = await res.json();
 
-    div.addEventListener("click", () => openMenuDetail(item));
+    // Logic sama dengan loadRecommendations() untuk konsistensi
+    let recs = data.filter(d => d.is_recommended);
+    if (recs.length === 0) recs = data.slice(0, 3);
 
-    container.appendChild(div);
+    TOP_SAW = recs.map(r => r.menu_name);
+    console.log("TOP_SAW loaded:", TOP_SAW);
+  } catch (err) {
+    console.warn("Gagal load TOP_SAW, badge Best tidak akan tampil:", err);
+    TOP_SAW = []; // fallback graceful
+  }
+}
+
+// Render tab list (sekali pas init)
+function renderTabs(){
+  const allCats = ["Semua", ...MENU.map(c => c.cat)];
+  tabsContainer.innerHTML = "";
+  allCats.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.className = "cat-tab" + (cat === activeTab ? " active" : "");
+    btn.textContent = cat;
+    btn.addEventListener("click", () => {
+      activeTab = cat;
+      document.querySelectorAll(".cat-tab").forEach(t => {
+        t.classList.toggle("active", t.textContent === activeTab);
+      });
+      renderMenu();
+    });
+    tabsContainer.appendChild(btn);
   });
+}
+
+// Render menu cards
+function renderMenu(){
+  container.innerHTML = "";
+
+  const visibleCats = activeTab === "Semua"
+    ? MENU
+    : MENU.filter(c => c.cat === activeTab);
+
+  let totalShown = 0;
+
+  visibleCats.forEach(cat => {
+    const filteredItems = cat.items.filter(item => matchesSearch(item, searchQuery));
+    if (filteredItems.length === 0) return;
+
+    totalShown += filteredItems.length;
+
+    // Category header
+    const h = document.createElement("h2");
+    h.className = "category-title";
+    h.textContent = cat.cat;
+    container.appendChild(h);
+
+    const icon = getIcon(cat.cat);
+
+    filteredItems.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "menu-item";
+
+      // Badges (Best dari TOP_SAW API, New dari data)
+      const isBest = TOP_SAW.includes(item.name);
+      const isNew = (item.badges || []).includes("New");
+
+      const badgesHtml = [];
+      if (isBest) badgesHtml.push(`<span class="badge badge-best">⭐ Best</span>`);
+      if (isNew) badgesHtml.push(`<span class="badge badge-new">🆕 New</span>`);
+
+      const badgesContainer = badgesHtml.length
+        ? `<div class="menu-badges">${badgesHtml.join("")}</div>`
+        : "";
+
+      // Temperature icons (Ice/Hot)
+      const tempIcons = [];
+      const hasIce = (item.badges || []).some(b => b === "Ice" || b === "Ice/Hot");
+      const hasHot = (item.badges || []).some(b => b === "Ice/Hot");
+      if (hasIce) tempIcons.push("❄️");
+      if (hasHot) tempIcons.push("🔥");
+
+      const tempHtml = tempIcons.length
+        ? `<div class="menu-temp">${tempIcons.join("")}</div>`
+        : "";
+
+      div.innerHTML = `
+        <div class="menu-icon-box">${icon}</div>
+        <div class="menu-info">
+          <div class="menu-name-row">
+            <div class="menu-name">${item.name}</div>
+            ${badgesContainer}
+          </div>
+          <div class="menu-price">Rp ${item.price.toLocaleString("id-ID")}</div>
+          <div class="menu-desc">${item.shortDesc}</div>
+        </div>
+        ${tempHtml}
+      `;
+
+      div.addEventListener("click", () => openMenuDetail(item));
+
+      container.appendChild(div);
+    });
+  });
+
+  // Empty state
+  if (totalShown === 0) {
+    const empty = document.createElement("div");
+    empty.className = "menu-empty";
+    empty.textContent = "Mohon maaf menu tidak ditemukan";
+    container.appendChild(empty);
+  }
+}
+
+// Search input handler
+searchInput.addEventListener("input", e => {
+  searchQuery = e.target.value.trim();
+  renderMenu();
 });
+
+// Init — load API dulu, baru render menu
+(async () => {
+  renderTabs(); // tabs bisa langsung dirender (gak butuh API)
+  renderMenu(); // first render (tanpa Best badge, tampil instant)
+  await loadTopSAW();
+  renderMenu(); // re-render setelah TOP_SAW ke-load
+})();
 
 // ============================================================
 // Rekomendasi (dari hasil SAW via API)
