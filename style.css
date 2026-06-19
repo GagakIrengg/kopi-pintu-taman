@@ -282,20 +282,50 @@ body{
 /* ===== MOBILE ===== */
 @media (max-width:480px){
   .menu-name-row{
-    flex-direction:column;
+    /* TETAP horizontal: nama kiri, badge kanan */
+    flex-direction:row;
     align-items:flex-start;
+    flex-wrap:wrap;
   }
 
   .menu-badges{
-    justify-content:flex-start;
+    justify-content:flex-end;
   }
 
   .badge{
-    font-size:.65rem;
+    font-size:.62rem;
+    padding:.15rem .4rem;
   }
 
   .modal{
     padding:1.25rem 1rem;
+  }
+
+  /* Card lebih compact di mobile */
+  .menu-item{
+    padding:.75rem .85rem 1.6rem;
+    gap:.65rem;
+  }
+
+  .menu-icon-box{
+    width:48px;
+    height:48px;
+    font-size:1.5rem;
+  }
+
+  .menu-name{
+    font-size:.95rem;
+  }
+
+  .menu-desc{
+    font-size:.78rem;
+    padding-right:3rem; /* hindari tabrakan dgn ice/hot */
+  }
+
+  .menu-temp{
+    bottom:.55rem;
+    right:.75rem;
+    font-size:.9rem;
   }
 }
 /* ===== RECOMMENDATION ===== */
@@ -497,4 +527,86 @@ body{
   padding:3rem 1rem;
   color:var(--brown-mid);
   font-size:.95rem;
+}
+
+/* ===== COFFEE BG PATTERN (full body, behind everything) ===== */
+body{
+  position:relative;
+  /* coffee beans tile pattern overlay, opacity rendah */
+  background-image:url('/static/assets/coffee-bg-pintutaman.png');
+  background-repeat:repeat;
+  background-size:400px 400px;
+  background-color:var(--cream);
+  /* transparent overlay via opacity di pseudo-element */
+}
+
+/* Buat transparansi pattern tanpa ganggu content */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:url('/static/assets/coffee-bg-pintutaman.svg');
+  background-repeat:repeat;
+  background-size:400px 400px;
+  opacity:0.10;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Pastikan content di atas pattern */
+.header, .recommendation, .menu-topbar, .menu-container, .fab, .modal-overlay{
+  position:relative;
+  z-index:1;
+}
+
+/* Reset body background biar pattern cuma dari ::before */
+body{
+  background-image:none;
+}
+
+/* ===== DAUN ORNAMEN (L+R, desktop only) ===== */
+.leaf-ornament{
+  position:fixed;
+  top:50%;
+  transform:translateY(-50%);
+  height:80vh;
+  max-height:700px;
+  width:auto;
+  opacity:0.12;
+  pointer-events:none;
+  z-index:0;
+}
+
+.leaf-left{
+  left:-3rem;
+}
+
+.leaf-right{
+  right:-3rem;
+  transform:translateY(-50%) scaleX(-1); /* Mirror horizontal */
+}
+
+/* Hide daun di mobile (<768px) */
+@media (max-width:767px){
+  .leaf-ornament{
+    display:none;
+  }
+  
+  /* Coffee BG di mobile lebih subtle */
+  body::before{
+    opacity:0.06;
+  }
+}
+
+/* Tablet & desktop besar */
+@media (min-width:1200px){
+  .leaf-ornament{
+    height:90vh;
+  }
+  .leaf-left{
+    left:-2rem;
+  }
+  .leaf-right{
+    right:-2rem;
+  }
 }

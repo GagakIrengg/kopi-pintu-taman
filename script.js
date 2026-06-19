@@ -92,7 +92,7 @@ const MENU = [
         name: "Americano",
         price: 20000,
         shortDesc: "Espresso dengan air panas.",
-        fullDesc: "Espresso dengan air panas, menghasilkan rasa kopi yang bold dan ringan.",
+        fullDesc: "Espresso dengan air panas, menghasilkan rasa kopi yang bold.",
         strength: 5,
         sweet: 0,
         badges: ["Ice/Hot"]
