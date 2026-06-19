@@ -28,7 +28,7 @@ body::before{
   background-image:url('/static/assets/coffee-bg-pintutaman.png');
   background-repeat:repeat;
   background-size:400px 400px;
-  opacity:0.10;
+  opacity:0.15;
   pointer-events:none;
   z-index:0;
 }
@@ -41,7 +41,7 @@ body::before{
   height:80vh;
   max-height:700px;
   width:auto;
-  opacity:0.12;
+  opacity:0.30;
   pointer-events:none;
   z-index:0;
 }
@@ -61,7 +61,7 @@ body::before{
     display:none;
   }
   body::before{
-    opacity:0.06;
+    opacity:0.10;
   }
 }
 
