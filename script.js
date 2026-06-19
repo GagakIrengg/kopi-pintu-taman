@@ -529,7 +529,6 @@ async function loadTopSAW(){
     if (!res.ok) throw new Error("API gagal");
     const data = await res.json();
 
-    // Logic sama dengan loadRecommendations() untuk konsistensi
     let recs = data.filter(d => d.is_recommended);
     if (recs.length === 0) recs = data.slice(0, 3);
 
@@ -537,11 +536,11 @@ async function loadTopSAW(){
     console.log("TOP_SAW loaded:", TOP_SAW);
   } catch (err) {
     console.warn("Gagal load TOP_SAW, badge Best tidak akan tampil:", err);
-    TOP_SAW = []; // fallback graceful
+    TOP_SAW = [];
   }
 }
 
-// Render tab list (sekali pas init)
+// Render tab list
 function renderTabs(){
   const allCats = ["Semua", ...MENU.map(c => c.cat)];
   tabsContainer.innerHTML = "";
@@ -576,7 +575,6 @@ function renderMenu(){
 
     totalShown += filteredItems.length;
 
-    // Category header
     const h = document.createElement("h2");
     h.className = "category-title";
     h.textContent = cat.cat;
@@ -588,7 +586,6 @@ function renderMenu(){
       const div = document.createElement("div");
       div.className = "menu-item";
 
-      // Badges (Best dari TOP_SAW API, New dari data)
       const isBest = TOP_SAW.includes(item.name);
       const isNew = (item.badges || []).includes("New");
 
@@ -600,7 +597,6 @@ function renderMenu(){
         ? `<div class="menu-badges">${badgesHtml.join("")}</div>`
         : "";
 
-      // Temperature icons (Ice/Hot)
       const tempIcons = [];
       const hasIce = (item.badges || []).some(b => b === "Ice" || b === "Ice/Hot");
       const hasHot = (item.badges || []).some(b => b === "Ice/Hot");
@@ -630,7 +626,6 @@ function renderMenu(){
     });
   });
 
-  // Empty state
   if (totalShown === 0) {
     const empty = document.createElement("div");
     empty.className = "menu-empty";
@@ -639,18 +634,16 @@ function renderMenu(){
   }
 }
 
-// Search input handler
 filterInput.addEventListener("input", e => {
   searchQuery = e.target.value.trim();
   renderMenu();
 });
 
-// Init — load API dulu, baru render menu
 (async () => {
-  renderTabs(); // tabs bisa langsung dirender (gak butuh API)
-  renderMenu(); // first render (tanpa Best badge, tampil instant)
+  renderTabs();
+  renderMenu();
   await loadTopSAW();
-  renderMenu(); // re-render setelah TOP_SAW ke-load
+  renderMenu();
 })();
 
 // ============================================================
@@ -665,12 +658,10 @@ async function loadRecommendations() {
     if (!res.ok) throw new Error("gagal ambil rekomendasi");
     const data = await res.json();
 
-    // ambil yang ditandai recommended; kalau kosong, pakai 3 teratas
     let recs = data.filter(d => d.is_recommended);
     if (recs.length === 0) recs = data.slice(0, 3);
 
     if (recs.length === 0) {
-      // Fallback terakhir: belum ada hasil SAW sama sekali.
       recContainer.innerHTML =
         '<p style="color:#a1887f;font-size:.85rem">' +
         'Rekomendasi belum tersedia.</p>';
@@ -714,27 +705,88 @@ document.getElementById("fab-review").onclick = () => overlay.classList.add("act
 document.getElementById("modal-close").onclick = () => overlay.classList.remove("active");
 overlay.addEventListener("click", e => { if (e.target === overlay) overlay.classList.remove("active"); });
 
-// Dropdown search (untuk modal review)
+// ============================================================
+// Dropdown search (combobox style untuk modal review)
+// ============================================================
 const searchInput = document.getElementById("menu-search");
+const dropdownToggle = document.getElementById("dropdown-toggle");
 const dropdownList = document.getElementById("dropdown-list");
 const selectedMenu = document.getElementById("selected-menu");
 
 function renderDropdown(filter = "") {
   const f = filter.toLowerCase();
   const matches = allMenuNames.filter(n => n.toLowerCase().includes(f));
-  dropdownList.innerHTML = matches.map(n => `<li>${n}</li>`).join("");
-  dropdownList.classList.toggle("show", matches.length > 0 && filter.length > 0);
+
+  if (matches.length === 0) {
+    dropdownList.innerHTML = '<li class="no-match">Menu tidak ditemukan</li>';
+  } else {
+    dropdownList.innerHTML = matches.map(n => `<li>${n}</li>`).join("");
+  }
 }
-searchInput.addEventListener("input", () => { renderDropdown(searchInput.value); selectedMenu.value = ""; });
-searchInput.addEventListener("focus", () => { if (searchInput.value) renderDropdown(searchInput.value); });
-dropdownList.addEventListener("click", e => {
-  if (e.target.tagName === "LI") {
-    searchInput.value = e.target.textContent;
-    selectedMenu.value = e.target.textContent;
-    dropdownList.classList.remove("show");
+
+function openDropdown() {
+  renderDropdown(searchInput.value);
+  dropdownList.classList.add("show");
+  dropdownToggle.classList.add("open");
+}
+
+function closeDropdown() {
+  dropdownList.classList.remove("show");
+  dropdownToggle.classList.remove("open");
+}
+
+function toggleDropdown() {
+  if (dropdownList.classList.contains("show")) {
+    closeDropdown();
+  } else {
+    openDropdown();
+  }
+}
+
+// Input: filter saat ketik, buka dropdown
+searchInput.addEventListener("input", () => {
+  renderDropdown(searchInput.value);
+  dropdownList.classList.add("show");
+  dropdownToggle.classList.add("open");
+  selectedMenu.value = "";
+});
+
+// Click pada input: buka dropdown
+searchInput.addEventListener("click", e => {
+  if (!dropdownList.classList.contains("show")) {
+    openDropdown();
   }
 });
-document.addEventListener("click", e => { if (!e.target.closest(".dropdown-wrapper")) dropdownList.classList.remove("show"); });
+
+// Click pada arrow toggle: buka/tutup
+dropdownToggle.addEventListener("click", e => {
+  e.stopPropagation();
+  toggleDropdown();
+});
+
+// Click pada item list: pilih
+dropdownList.addEventListener("click", e => {
+  if (e.target.tagName === "LI" && !e.target.classList.contains("no-match")) {
+    searchInput.value = e.target.textContent;
+    selectedMenu.value = e.target.textContent;
+    closeDropdown();
+  }
+});
+
+// Click di luar dropdown: tutup
+document.addEventListener("click", e => {
+  if (!e.target.closest(".dropdown-wrapper")) {
+    closeDropdown();
+  }
+});
+
+// Keyboard: ESC untuk tutup
+searchInput.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    closeDropdown();
+    searchInput.blur();
+  }
+});
 
 // Star rating
 const starContainer = document.getElementById("star-rating");
@@ -770,7 +822,6 @@ document.getElementById("review-form").addEventListener("submit", async e => {
     if (!res.ok) throw new Error("Gagal mengirim review");
     msg.textContent = "✅ Review berhasil dikirim!";
     msg.className = "form-msg success";
-    // Reset
     searchInput.value = ""; selectedMenu.value = ""; ratingInput.value = "";
     document.getElementById("review-text").value = "";
     starContainer.querySelectorAll("span").forEach(s => { s.textContent = "☆"; s.classList.remove("active"); });
