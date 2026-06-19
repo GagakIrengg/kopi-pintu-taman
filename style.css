@@ -17,9 +17,73 @@ body{
   color:var(--brown-dark);
   line-height:1.5;
   min-height:100vh;
+  position:relative;
 }
 
-/* Header */
+/* ===== COFFEE BG PATTERN (full body, behind everything) ===== */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:url('/static/assets/coffee-bg-pintutaman.png');
+  background-repeat:repeat;
+  background-size:400px 400px;
+  opacity:0.10;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ===== DAUN ORNAMEN (L+R, desktop only) ===== */
+.leaf-ornament{
+  position:fixed;
+  top:50%;
+  transform:translateY(-50%);
+  height:80vh;
+  max-height:700px;
+  width:auto;
+  opacity:0.12;
+  pointer-events:none;
+  z-index:0;
+}
+
+.leaf-left{
+  left:-3rem;
+}
+
+.leaf-right{
+  right:-3rem;
+  transform:translateY(-50%) scaleX(-1);
+}
+
+/* Hide daun di mobile (<768px) */
+@media (max-width:767px){
+  .leaf-ornament{
+    display:none;
+  }
+  body::before{
+    opacity:0.06;
+  }
+}
+
+@media (min-width:1200px){
+  .leaf-ornament{
+    height:90vh;
+  }
+  .leaf-left{
+    left:-2rem;
+  }
+  .leaf-right{
+    right:-2rem;
+  }
+}
+
+/* Pastikan content di atas pattern & daun */
+.header, .recommendation, .menu-topbar, .menu-container, .fab, .modal-overlay{
+  position:relative;
+  z-index:1;
+}
+
+/* ===== HEADER ===== */
 .header{
   position:relative;
   background:
@@ -32,6 +96,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
+  z-index:1;
 }
 
 .header-content{
@@ -74,7 +139,6 @@ body{
   margin-top:.2rem;
 }
 
-/* Header mobile */
 @media (max-width:480px){
   .header{
     padding:2rem 1rem 1.75rem;
@@ -91,12 +155,13 @@ body{
   }
 }
 
-/* Menu */
+/* ===== MENU ===== */
 .menu-container{
   max-width:600px;
   margin:0 auto;
   padding:1rem 1rem 5rem;
 }
+
 .category-title{
   font-size:1.1rem;
   font-weight:700;
@@ -105,6 +170,7 @@ body{
   border-bottom:2px solid var(--brown-pale);
   color:var(--brown-mid);
 }
+
 .menu-item{
   display:flex;
   gap:.85rem;
@@ -114,102 +180,8 @@ body{
   padding:.9rem 1rem;
   margin-bottom:.65rem;
   box-shadow:var(--shadow);
-}
-.menu-icon{font-size:1.6rem;flex-shrink:0;margin-top:.1rem}
-.menu-info{flex:1}
-.menu-name{font-weight:600;font-size:1rem}
-.menu-price{font-size:.85rem;color:var(--brown-light);margin:.15rem 0}
-.menu-desc{font-size:.82rem;color:#8d6e63}
-
-/* FAB */
-.fab{
-  position:fixed;
-  bottom:1.5rem;right:1.5rem;
-  background:var(--brown-dark);
-  color:var(--cream);
-  border:none;
-  border-radius:50px;
-  padding:.75rem 1.25rem;
-  font-size:.95rem;
-  cursor:pointer;
-  box-shadow:0 4px 14px rgba(78,52,46,.3);
-  z-index:100;
-  transition:transform .2s;
-}
-.fab:hover{transform:scale(1.05)}
-
-/* Modal */
-.modal-overlay{
-  display:none;
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.45);
-  z-index:200;
-  justify-content:center;
-  align-items:center;
-  padding:1rem;
-}
-.modal-overlay.active{display:flex}
-.modal{
-  background:var(--white);
-  border-radius:var(--radius);
-  padding:1.75rem 1.5rem;
-  width:100%;max-width:420px;
   position:relative;
-  box-shadow:0 8px 30px rgba(0,0,0,.2);
-  max-height:90vh;overflow-y:auto;
-}
-.modal h2{font-size:1.2rem;margin-bottom:1rem;color:var(--brown-dark)}
-.modal-close{
-  position:absolute;top:.75rem;right:1rem;
-  background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--brown-mid);
-}
-.modal label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.3rem;margin-top:.85rem;color:var(--brown-mid)}
-
-/* Dropdown */
-.dropdown-wrapper{position:relative}
-#menu-search{
-  width:100%;padding:.6rem .75rem;border:1px solid var(--brown-pale);border-radius:8px;
-  font-size:.9rem;outline:none;
-}
-#menu-search:focus{border-color:var(--brown-mid)}
-.dropdown-list{
-  display:none;
-  position:absolute;top:100%;left:0;right:0;
-  background:var(--white);border:1px solid var(--brown-pale);border-radius:8px;
-  max-height:180px;overflow-y:auto;z-index:10;list-style:none;
-  box-shadow:var(--shadow);
-}
-.dropdown-list.show{display:block}
-.dropdown-list li{padding:.55rem .75rem;font-size:.88rem;cursor:pointer}
-.dropdown-list li:hover{background:var(--cream)}
-
-/* Stars */
-.star-rating{display:flex;gap:.35rem;font-size:1.6rem;cursor:pointer;margin-top:.25rem}
-.star-rating span{color:var(--brown-pale);transition:color .15s}
-.star-rating span.active{color:#f9a825}
-
-/* Textarea */
-#review-text{
-  width:100%;padding:.6rem .75rem;border:1px solid var(--brown-pale);border-radius:8px;
-  font-size:.9rem;resize:vertical;outline:none;font-family:inherit;
-}
-#review-text:focus{border-color:var(--brown-mid)}
-
-/* Submit */
-.btn-submit{
-  margin-top:1rem;width:100%;padding:.7rem;
-  background:var(--brown-dark);color:var(--cream);
-  border:none;border-radius:8px;font-size:.95rem;font-weight:600;
-  cursor:pointer;transition:background .2s;
-}
-.btn-submit:hover{background:var(--brown-mid)}
-
-.form-msg{text-align:center;font-size:.85rem;margin-top:.5rem}
-.form-msg.success{color:#2e7d32}
-.form-msg.error{color:#c62828}
-
-/* ===== MENU CARD IMPROVEMENT ===== */
-.menu-item{
+  padding-bottom:1.5rem;
   cursor:pointer;
   transition:transform .18s ease, box-shadow .18s ease;
 }
@@ -218,6 +190,23 @@ body{
   transform:translateY(-2px);
   box-shadow:0 6px 18px rgba(78,52,46,.16);
 }
+
+.menu-icon-box{
+  width:54px;
+  height:54px;
+  border-radius:10px;
+  background:var(--cream);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.8rem;
+  flex-shrink:0;
+}
+
+.menu-info{flex:1}
+.menu-name{font-weight:600;font-size:1rem}
+.menu-price{font-size:.85rem;color:var(--brown-light);margin:.15rem 0}
+.menu-desc{font-size:.82rem;color:#8d6e63}
 
 .menu-name-row{
   display:flex;
@@ -246,151 +235,32 @@ body{
   border:1px solid rgba(78,52,46,.08);
 }
 
-/* ===== DETAIL MODAL ===== */
-#detail-name{
-  font-size:1.25rem;
-  font-weight:700;
-  margin-bottom:.35rem;
-  color:var(--brown-dark);
-}
-
-#detail-price{
-  font-size:1rem;
-  font-weight:600;
-  color:var(--brown-mid);
-  margin-bottom:1rem;
-}
-
-#detail-desc{
-  font-size:.92rem;
-  line-height:1.65;
-  color:#6d4c41;
-  margin-top:.5rem;
-}
-
-#detail-levels{
-  margin-bottom:1rem;
-}
-
-.level-bar{
-  font-size:1.15rem;
-  letter-spacing:2px;
-  margin:.3rem 0 .85rem;
-  color:var(--brown-dark);
-}
-
-/* ===== MOBILE ===== */
-@media (max-width:480px){
-  .menu-name-row{
-    /* TETAP horizontal: nama kiri, badge kanan */
-    flex-direction:row;
-    align-items:flex-start;
-    flex-wrap:wrap;
-  }
-
-  .menu-badges{
-    justify-content:flex-end;
-  }
-
-  .badge{
-    font-size:.62rem;
-    padding:.15rem .4rem;
-  }
-
-  .modal{
-    padding:1.25rem 1rem;
-  }
-
-  /* Card lebih compact di mobile */
-  .menu-item{
-    padding:.75rem .85rem 1.6rem;
-    gap:.65rem;
-  }
-
-  .menu-icon-box{
-    width:48px;
-    height:48px;
-    font-size:1.5rem;
-  }
-
-  .menu-name{
-    font-size:.95rem;
-  }
-
-  .menu-desc{
-    font-size:.78rem;
-    padding-right:3rem; /* hindari tabrakan dgn ice/hot */
-  }
-
-  .menu-temp{
-    bottom:.55rem;
-    right:.75rem;
-    font-size:.9rem;
-  }
-}
-/* ===== RECOMMENDATION ===== */
-.recommendation{
-  max-width:600px;
-  margin:1rem auto 0;
-  padding:0 1rem;
-}
-
-.rec-title{
-  font-size:1.1rem;
-  font-weight:700;
-  margin-bottom:.8rem;
-  color:var(--brown-dark);
-}
-
-.rec-container{
-  display:flex;
-  gap:.75rem;
-  overflow-x:auto;
-  padding-bottom:.5rem;
-}
-
-.rec-card{
-  min-width:150px;
-  background:var(--white);
-  border-radius:16px;
-  padding:1rem .8rem;
-  box-shadow:var(--shadow);
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:.3rem;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.rec-card:hover{
-  transform:translateY(-3px);
-}
-
-.rec-icon{
-  font-size:1.6rem;
-  background:#e8f0e6;
-  padding:.5rem;
-  border-radius:10px;
-}
-
-.rec-badge{
-  font-size:.7rem;
+.badge.badge-best{
   background:#e8f5e9;
   color:#2e7d32;
-  padding:.2rem .5rem;
-  border-radius:999px;
-  font-weight:600;
+  border:1px solid rgba(46,125,50,.15);
 }
 
-.rec-name{
-  font-size:.9rem;
-  font-weight:600;
+.badge.badge-new{
+  background:#fff3e0;
+  color:#e65100;
+  border:1px solid rgba(230,81,0,.15);
 }
 
-.rec-price{
-  font-size:.8rem;
-  color:var(--brown-light);
+.menu-temp{
+  position:absolute;
+  bottom:.65rem;
+  right:.9rem;
+  display:flex;
+  gap:.3rem;
+  font-size:.95rem;
+}
+
+.menu-empty{
+  text-align:center;
+  padding:3rem 1rem;
+  color:var(--brown-mid);
+  font-size:.95rem;
 }
 
 /* ===== MENU TOP BAR (SEARCH + TABS) ===== */
@@ -468,7 +338,6 @@ body{
   border-color:var(--brown-dark);
 }
 
-/* Mobile responsive */
 @media (max-width:480px){
   .menu-topbar{
     flex-direction:column;
@@ -480,133 +349,247 @@ body{
   }
 }
 
-/* ===== MENU CARD IMPROVEMENT (Icon Box) ===== */
-.menu-item{
-  position:relative;
-  padding-bottom:1.5rem;
+/* ===== FAB ===== */
+.fab{
+  position:fixed;
+  bottom:1.5rem;right:1.5rem;
+  background:var(--brown-dark);
+  color:var(--cream);
+  border:none;
+  border-radius:50px;
+  padding:.75rem 1.25rem;
+  font-size:.95rem;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(78,52,46,.3);
+  z-index:100;
+  transition:transform .2s;
 }
 
-.menu-icon-box{
-  width:54px;
-  height:54px;
-  border-radius:10px;
-  background:var(--cream);
-  display:flex;
-  align-items:center;
+.fab:hover{transform:scale(1.05)}
+
+/* ===== MODAL ===== */
+.modal-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.45);
+  z-index:200;
   justify-content:center;
-  font-size:1.8rem;
-  flex-shrink:0;
+  align-items:center;
+  padding:1rem;
 }
 
-/* ===== BADGE VARIANTS (Best + New) ===== */
-.badge.badge-best{
+.modal-overlay.active{display:flex}
+
+.modal{
+  background:var(--white);
+  border-radius:var(--radius);
+  padding:1.75rem 1.5rem;
+  width:100%;max-width:420px;
+  position:relative;
+  box-shadow:0 8px 30px rgba(0,0,0,.2);
+  max-height:90vh;overflow-y:auto;
+}
+
+.modal h2{font-size:1.2rem;margin-bottom:1rem;color:var(--brown-dark)}
+
+.modal-close{
+  position:absolute;top:.75rem;right:1rem;
+  background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--brown-mid);
+}
+
+.modal label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.3rem;margin-top:.85rem;color:var(--brown-mid)}
+
+/* ===== DROPDOWN ===== */
+.dropdown-wrapper{position:relative}
+
+#menu-search{
+  width:100%;padding:.6rem .75rem;border:1px solid var(--brown-pale);border-radius:8px;
+  font-size:.9rem;outline:none;
+}
+
+#menu-search:focus{border-color:var(--brown-mid)}
+
+.dropdown-list{
+  display:none;
+  position:absolute;top:100%;left:0;right:0;
+  background:var(--white);border:1px solid var(--brown-pale);border-radius:8px;
+  max-height:180px;overflow-y:auto;z-index:10;list-style:none;
+  box-shadow:var(--shadow);
+}
+
+.dropdown-list.show{display:block}
+.dropdown-list li{padding:.55rem .75rem;font-size:.88rem;cursor:pointer}
+.dropdown-list li:hover{background:var(--cream)}
+
+/* ===== STARS ===== */
+.star-rating{display:flex;gap:.35rem;font-size:1.6rem;cursor:pointer;margin-top:.25rem}
+.star-rating span{color:var(--brown-pale);transition:color .15s}
+.star-rating span.active{color:#f9a825}
+
+/* ===== TEXTAREA ===== */
+#review-text{
+  width:100%;padding:.6rem .75rem;border:1px solid var(--brown-pale);border-radius:8px;
+  font-size:.9rem;resize:vertical;outline:none;font-family:inherit;
+}
+
+#review-text:focus{border-color:var(--brown-mid)}
+
+/* ===== SUBMIT ===== */
+.btn-submit{
+  margin-top:1rem;width:100%;padding:.7rem;
+  background:var(--brown-dark);color:var(--cream);
+  border:none;border-radius:8px;font-size:.95rem;font-weight:600;
+  cursor:pointer;transition:background .2s;
+}
+
+.btn-submit:hover{background:var(--brown-mid)}
+
+.form-msg{text-align:center;font-size:.85rem;margin-top:.5rem}
+.form-msg.success{color:#2e7d32}
+.form-msg.error{color:#c62828}
+
+/* ===== DETAIL MODAL ===== */
+#detail-name{
+  font-size:1.25rem;
+  font-weight:700;
+  margin-bottom:.35rem;
+  color:var(--brown-dark);
+}
+
+#detail-price{
+  font-size:1rem;
+  font-weight:600;
+  color:var(--brown-mid);
+  margin-bottom:1rem;
+}
+
+#detail-desc{
+  font-size:.92rem;
+  line-height:1.65;
+  color:#6d4c41;
+  margin-top:.5rem;
+}
+
+#detail-levels{
+  margin-bottom:1rem;
+}
+
+.level-bar{
+  font-size:1.15rem;
+  letter-spacing:2px;
+  margin:.3rem 0 .85rem;
+  color:var(--brown-dark);
+}
+
+/* ===== RECOMMENDATION ===== */
+.recommendation{
+  max-width:600px;
+  margin:1rem auto 0;
+  padding:0 1rem;
+}
+
+.rec-title{
+  font-size:1.1rem;
+  font-weight:700;
+  margin-bottom:.8rem;
+  color:var(--brown-dark);
+}
+
+.rec-container{
+  display:flex;
+  gap:.75rem;
+  overflow-x:auto;
+  padding-bottom:.5rem;
+}
+
+.rec-card{
+  min-width:150px;
+  background:var(--white);
+  border-radius:16px;
+  padding:1rem .8rem;
+  box-shadow:var(--shadow);
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:.3rem;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.rec-card:hover{
+  transform:translateY(-3px);
+}
+
+.rec-icon{
+  font-size:1.6rem;
+  background:#e8f0e6;
+  padding:.5rem;
+  border-radius:10px;
+}
+
+.rec-badge{
+  font-size:.7rem;
   background:#e8f5e9;
   color:#2e7d32;
-  border:1px solid rgba(46,125,50,.15);
+  padding:.2rem .5rem;
+  border-radius:999px;
+  font-weight:600;
 }
 
-.badge.badge-new{
-  background:#fff3e0;
-  color:#e65100;
-  border:1px solid rgba(230,81,0,.15);
+.rec-name{
+  font-size:.9rem;
+  font-weight:600;
 }
 
-/* ===== ICE/HOT TEMPERATURE ICONS ===== */
-.menu-temp{
-  position:absolute;
-  bottom:.65rem;
-  right:.9rem;
-  display:flex;
-  gap:.3rem;
-  font-size:.95rem;
+.rec-price{
+  font-size:.8rem;
+  color:var(--brown-light);
 }
 
-/* ===== EMPTY STATE ===== */
-.menu-empty{
-  text-align:center;
-  padding:3rem 1rem;
-  color:var(--brown-mid);
-  font-size:.95rem;
-}
-
-/* ===== COFFEE BG PATTERN (full body, behind everything) ===== */
-body{
-  position:relative;
-  /* coffee beans tile pattern overlay, opacity rendah */
-  background-image:url('/static/assets/coffee-bg-pintutaman.png');
-  background-repeat:repeat;
-  background-size:400px 400px;
-  background-color:var(--cream);
-  /* transparent overlay via opacity di pseudo-element */
-}
-
-/* Buat transparansi pattern tanpa ganggu content */
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background-image:url('/static/assets/coffee-bg-pintutaman.svg');
-  background-repeat:repeat;
-  background-size:400px 400px;
-  opacity:0.10;
-  pointer-events:none;
-  z-index:0;
-}
-
-/* Pastikan content di atas pattern */
-.header, .recommendation, .menu-topbar, .menu-container, .fab, .modal-overlay{
-  position:relative;
-  z-index:1;
-}
-
-/* Reset body background biar pattern cuma dari ::before */
-body{
-  background-image:none;
-}
-
-/* ===== DAUN ORNAMEN (L+R, desktop only) ===== */
-.leaf-ornament{
-  position:fixed;
-  top:50%;
-  transform:translateY(-50%);
-  height:80vh;
-  max-height:700px;
-  width:auto;
-  opacity:0.12;
-  pointer-events:none;
-  z-index:0;
-}
-
-.leaf-left{
-  left:-3rem;
-}
-
-.leaf-right{
-  right:-3rem;
-  transform:translateY(-50%) scaleX(-1); /* Mirror horizontal */
-}
-
-/* Hide daun di mobile (<768px) */
-@media (max-width:767px){
-  .leaf-ornament{
-    display:none;
+/* ===== MOBILE ===== */
+@media (max-width:480px){
+  .menu-name-row{
+    flex-direction:row;
+    align-items:flex-start;
+    flex-wrap:wrap;
   }
-  
-  /* Coffee BG di mobile lebih subtle */
-  body::before{
-    opacity:0.06;
-  }
-}
 
-/* Tablet & desktop besar */
-@media (min-width:1200px){
-  .leaf-ornament{
-    height:90vh;
+  .menu-badges{
+    justify-content:flex-end;
   }
-  .leaf-left{
-    left:-2rem;
+
+  .badge{
+    font-size:.62rem;
+    padding:.15rem .4rem;
   }
-  .leaf-right{
-    right:-2rem;
+
+  .modal{
+    padding:1.25rem 1rem;
+  }
+
+  .menu-item{
+    padding:.75rem .85rem 1.6rem;
+    gap:.65rem;
+  }
+
+  .menu-icon-box{
+    width:48px;
+    height:48px;
+    font-size:1.5rem;
+  }
+
+  .menu-name{
+    font-size:.95rem;
+  }
+
+  .menu-desc{
+    font-size:.78rem;
+    padding-right:3rem;
+  }
+
+  .menu-temp{
+    bottom:.55rem;
+    right:.75rem;
+    font-size:.9rem;
   }
 }
