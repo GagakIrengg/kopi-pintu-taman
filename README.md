@@ -15,9 +15,7 @@ Sistem terintegrasi untuk operasional dan rekomendasi menu **Cafe Kopi Pintu Tam
 | Web Menu | https://menu-kpt.up.railway.app |
 | Backend API | https://menu-kpt.up.railway.app/docs |
 
----
-
-## 📁 Struktur Repository
+```
 kopi-pintu-taman/
 │
 ├── pos-app/                  # Aplikasi POS mobile (Flutter)
@@ -42,8 +40,7 @@ kopi-pintu-taman/
 ├── main.py                   # Backend FastAPI
 ├── requirements.txt          # Python dependencies
 └── Procfile                  # Konfigurasi Railway deployment
-
----
+```
 
 ## 🛠 Tech Stack
 
@@ -123,5 +120,5 @@ python saw_recommend.py
 
 ## 📬 Kontak
 
-**Noel** · noel.535210103@stu.untar.ac.id  
+**Noel** · noel852003@gmail.com
 GitHub: [@GagakIrengg](https://github.com/GagakIrengg)
